@@ -30,6 +30,7 @@ public static class Arrays
     /// </summary>
     public static void RotateListRight(List<int> data, int amount)
     {
+        // Instead of moving an entire block at once, we will move one element at a time, repeating the process the number of times indicated by the amount.
         for (int i = 0; i < amount; i++)
         {
             int lastElementIndex = data.Count - 1;  // get the index of the last element in the list
