@@ -7,7 +7,6 @@
         var result = "";
         while (stack.Count > 0)
             result += stack.Pop();
-
         return result;
     }
 }
