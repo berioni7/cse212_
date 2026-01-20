@@ -5,60 +5,43 @@ using System;
 public class PriorityQueueTests
 {
     [TestMethod]
-    // Scenario: Enqueue items with different priorities (Low: 2, High: 10, Medium: 5).
-    // Expected Result: The item with the highest priority (10) should be removed first.
-    // Defect(s) Found: The original loop used "index < _queue.Count - 1", which caused it to 
-    //                  skip the last item in the list. Also, the item was not being removed 
-    //                  from the queue after Dequeue was called.
-    public void TestPriorityQueue_HighestPriority()
+    // Scenario: Add items with different priorities and ensure the highest is removed first.
+    // Expected Result: High, Medium, Low
+    // Defect(s) Found: Original code skipped the last item and didn't remove items from the list.
+    public void TestPriorityQueue_1()
     {
         var pq = new PriorityQueue();
-        pq.Enqueue("Low", 2);
-        pq.Enqueue("High", 10);
+        pq.Enqueue("Low", 1);
         pq.Enqueue("Medium", 5);
+        pq.Enqueue("High", 10);
 
         Assert.AreEqual("High", pq.Dequeue());
+        Assert.AreEqual("Medium", pq.Dequeue());
+        Assert.AreEqual("Low", pq.Dequeue());
     }
 
     [TestMethod]
-    // Scenario: Enqueue multiple items with the SAME priority level.
-    // Expected Result: The queue should follow FIFO rules, removing the first item added 
-    //                  among those with the same high priority.
-    // Defect(s) Found: The original code used the ">=" operator in the priority comparison. 
-    //                  This caused the queue to pick the LAST item added (LIFO) instead 
-    //                  of the first one (FIFO) when priorities were equal.
-    public void TestPriorityQueue_FIFO_Tie()
+    // Scenario: Add multiple items with the same high priority to test FIFO.
+    // Expected Result: First, Second
+    // Defect(s) Found: Original code used '>=' which picked the newest item instead of the oldest.
+    public void TestPriorityQueue_2()
     {
         var pq = new PriorityQueue();
-        pq.Enqueue("First A", 5);
-        pq.Enqueue("Second B", 5);
-        pq.Enqueue("Third C", 5);
+        pq.Enqueue("First", 7);
+        pq.Enqueue("Second", 7);
+        pq.Enqueue("Third", 3);
 
-        Assert.AreEqual("First A", pq.Dequeue());
-        Assert.AreEqual("Second B", pq.Dequeue());
+        Assert.AreEqual("First", pq.Dequeue());
+        Assert.AreEqual("Second", pq.Dequeue());
     }
 
     [TestMethod]
-    // Scenario: Try to dequeue from a queue that has no items.
-    // Expected Result: Should throw an InvalidOperationException with the specific 
-    //                  message "The queue is empty."
-    // Defect(s) Found: Needed to ensure the exception type and the error message string 
-    //                  matched the requirements exactly.
+    // Scenario: Verify exception message when dequeuing from an empty queue.
+    // Expected Result: InvalidOperationException with "The queue is empty."
     public void TestPriorityQueue_Empty()
     {
         var pq = new PriorityQueue();
-        try 
-        {
-            pq.Dequeue();
-            Assert.Fail("Exception should have been thrown.");
-        }
-        catch (InvalidOperationException e) 
-        {
-            Assert.AreEqual("The queue is empty.", e.Message);
-        }
-        catch (AssertFailedException)
-        {
-            throw;
-        }
+        var exception = Assert.ThrowsException<InvalidOperationException>(() => pq.Dequeue());
+        Assert.AreEqual("The queue is empty.", exception.Message);
     }
 }

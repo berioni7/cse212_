@@ -7,11 +7,10 @@
 /// less than they will stay in the queue forever.  If a person is out of turns then they will 
 /// not be added back into the queue.
 /// </summary>
-using System;
-
 public class TakingTurnsQueue
 {
     private readonly PersonQueue _people = new();
+
     public int Length => _people.Length;
 
     public void AddPerson(string name, int turns)
@@ -20,6 +19,9 @@ public class TakingTurnsQueue
         _people.Enqueue(person);
     }
 
+    /// <summary>
+    /// Get the next person in the queue and return them. 
+    /// </summary>
     public Person GetNextPerson()
     {
         if (_people.IsEmpty())
@@ -27,23 +29,33 @@ public class TakingTurnsQueue
             throw new InvalidOperationException("No one in the queue.");
         }
 
+        // 1. Remove the person from the front of the line
         Person person = _people.Dequeue();
 
-        
-        if (person.Turns <= 0) 
+        // 2. Relay Logic
+        // If Turns <= 0, it is infinite. It must always return to the queue.
+        if (person.Turns <= 0)
         {
-            // If it is infinite (0 or negative), return to the queue without changing anything
             _people.Enqueue(person);
         }
+        // If Turns > 1, it still has turns left after this one.
+        // We decrement it and put it back at the end of the queue.
         else if (person.Turns > 1)
         {
-            // If there is more than one shift, decrease by one and return to the queue
             person.Turns -= 1;
             _people.Enqueue(person);
         }
-        // If it is exactly 1, it does not return to the queue.
+        // If Turns == 1, it uses its last turn and does NOT return to the queue.
+        else
+        {
+            person.Turns -= 1; 
+        }
 
         return person;
     }
 
+    public override string ToString()
+    {
+        return _people.ToString();
+    }
 }

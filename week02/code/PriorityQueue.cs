@@ -19,21 +19,40 @@ public class PriorityQueue
         }
 
         var highPriorityIndex = 0;
-        // index < _queue.Count to check all items
-        for (int index = 1; index < _queue.Count; index++) 
+        
+        for (int index = 1; index < _queue.Count; index++)
         {
-            // We use ‘>’ to keep the FIRST item found in case of a tie (FIFO).
             if (_queue[index].Priority > _queue[highPriorityIndex].Priority)
+            {
                 highPriorityIndex = index;
+            }
         }
 
         var value = _queue[highPriorityIndex].Value;
-        
-        // Now we remove the item from the list after getting the value
-        _queue.RemoveAt(highPriorityIndex); 
+        _queue.RemoveAt(highPriorityIndex);
         
         return value;
     }
 
-    public override string ToString() => $"[{string.Join(", ", _queue)}]";
+    public override string ToString()
+    {
+        return $"[{string.Join(", ", _queue)}]";
+    }
+}
+
+internal class PriorityItem
+{
+    internal string Value { get; set; }
+    internal int Priority { get; set; }
+
+    internal PriorityItem(string value, int priority)
+    {
+        Value = value;
+        Priority = priority;
+    }
+
+    public override string ToString()
+    {
+        return $"{Value} (Pri:{Priority})";
+    }
 }
