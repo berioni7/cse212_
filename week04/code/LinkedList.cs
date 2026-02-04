@@ -10,84 +10,88 @@ public class LinkedList : IEnumerable<int>
     /// </summary>
     public void InsertHead(int value)
     {
+        // Create new node
         Node newNode = new(value);
+        // If the list is empty, then point both head and tail to the new node.
         if (_head is null)
         {
             _head = newNode;
             _tail = newNode;
         }
+        // If the list is not empty, then only head will be affected.
         else
         {
-            newNode.Next = _head;
-            _head.Prev = newNode;
-            _head = newNode;
+            newNode.Next = _head; // Connect new node to the previous head
+            _head.Prev = newNode; // Connect the previous head to the new node
+            _head = newNode; // Update the head to point to the new node
         }
     }
 
     /// <summary>
-    /// Problem 1: Insert a new node at the back (i.e. the tail) of the linked list.
+    /// Insert a new node at the back (i.e. the tail) of the linked list.
     /// </summary>
     public void InsertTail(int value)
     {
-        // Create the new node
+        // Create new node
         Node newNode = new(value);
-
-        // If the list is empty, both head and tail point to the new node
+        // If the list is empty, then point both head and tail to the new node.
         if (_tail is null)
         {
-            _head = newNode;
             _tail = newNode;
+            _head = newNode;
         }
+        // If the list is not empty, then only tail will be affected.
         else
         {
-            // Connect the current tail to the new node
-            newNode.Prev = _tail;
-            _tail.Next = newNode;
-            // Update the tail pointer to the new node
-            _tail = newNode;
+            newNode.Prev = _tail; // Connect new node to the previous tail
+            _tail.Next = newNode; // Connect the previous tail to the new node
+            _tail = newNode; // Update the tail to point to the new node
         }
     }
+
 
     /// <summary>
     /// Remove the first node (i.e. the head) of the linked list.
     /// </summary>
     public void RemoveHead()
     {
+        // If the list has only one item in it, then set head and tail 
+        // to null resulting in an empty list.  This condition will also
+        // cover an empty list.  Its okay to set to null again.
         if (_head == _tail)
         {
             _head = null;
             _tail = null;
         }
+        // If the list has more than one item in it, then only the head
+        // will be affected.
         else if (_head is not null)
         {
-            _head.Next!.Prev = null;
-            _head = _head.Next;
+            _head.Next!.Prev = null; // Disconnect the second node from the first node
+            _head = _head.Next; // Update the head to point to the second node
         }
     }
 
+
     /// <summary>
-    /// Problem 2: Remove the last node (i.e. the tail) of the linked list.
+    /// Remove the last node (i.e. the tail) of the linked list.
     /// </summary>
     public void RemoveTail()
     {
-        // If the list is empty, there is nothing to remove
-        if (_tail is null)
-        {
-            return;
-        }
-
-        // If there is only one node, set both head and tail to null
+        // If the list has only one item in it, then set head and tail 
+        // to null resulting in an empty list.  This condition will also
+        // cover an empty list.  Its okay to set to null again.
         if (_head == _tail)
         {
             _head = null;
             _tail = null;
         }
-        else
+        // If the list has more than one item in it, then only the tail
+        // will be affected.
+        else if (_tail is not null)
         {
-            // Disconnect the last node by updating the second-to-last node's Next pointer
-            _tail.Prev!.Next = null;
-            // Update the tail pointer to the previous node
-            _tail = _tail.Prev;
+            _tail.Prev!.Next = null; // Disconnect the second-to-last node from the last node
+            _tail = _tail.Prev; // Update the tail to point to the second-to-last node
         }
     }
 
@@ -96,31 +100,39 @@ public class LinkedList : IEnumerable<int>
     /// </summary>
     public void InsertAfter(int value, int newValue)
     {
+        // Search for the node that matches 'value' by starting at the 
+        // head of the list.
         Node? curr = _head;
         while (curr is not null)
         {
             if (curr.Data == value)
             {
+                // If the location of 'value' is at the end of the list,
+                // then we can call insert_tail to add 'new_value'
                 if (curr == _tail)
                 {
                     InsertTail(newValue);
                 }
+                // For any other location of 'value', need to create a 
+                // new node and reconnect the links to insert.
                 else
                 {
                     Node newNode = new(newValue);
-                    newNode.Prev = curr;
-                    newNode.Next = curr.Next;
-                    curr.Next!.Prev = newNode;
-                    curr.Next = newNode;
+                    newNode.Prev = curr; // Connect new node to the node containing 'value'
+                    newNode.Next = curr.Next; // Connect new node to the node after 'value'
+                    curr.Next!.Prev = newNode; // Connect node after 'value' to the new node
+                    curr.Next = newNode; // Connect the node containing 'value' to the new node
                 }
-                return;
+
+                return; // We can exit the function after we insert
             }
-            curr = curr.Next;
+
+            curr = curr.Next; // Go to the next node to search for 'value'
         }
     }
 
     /// <summary>
-    /// Problem 3: Remove the first node that contains 'value'.
+    /// Remove the first node that contains 'value'.
     /// </summary>
     public void Remove(int value)
     {
@@ -129,43 +141,41 @@ public class LinkedList : IEnumerable<int>
         {
             if (curr.Data == value)
             {
-                // If it's the head, reuse RemoveHead
+                // If node to remove is the head
                 if (curr == _head)
                 {
                     RemoveHead();
                 }
-                // If it's the tail, reuse RemoveTail
+                // If node to remove is the tail
                 else if (curr == _tail)
                 {
                     RemoveTail();
                 }
-                // If it's in the middle, bypass the current node
+                // Node is in the middle
                 else
                 {
                     curr.Prev!.Next = curr.Next;
                     curr.Next!.Prev = curr.Prev;
                 }
-                return; // Exit after the first match is found and removed
+                return; // remove only the first occurrence
             }
+
             curr = curr.Next;
         }
     }
 
     /// <summary>
-    /// Problem 4: Search for all instances of 'oldValue' and replace the value to 'newValue'.
+    /// Search for all instances of 'oldValue' and replace the value to 'newValue'.
     /// </summary>
     public void Replace(int oldValue, int newValue)
     {
         Node? curr = _head;
-        // Iterate through the entire list
         while (curr is not null)
         {
-            // If the value matches, update the data
             if (curr.Data == oldValue)
             {
-                curr.Data = newValue;
+                curr.Data = newValue; // Replace matching value
             }
-            // Move to the next node even if a replacement was made
             curr = curr.Next;
         }
     }
@@ -175,6 +185,7 @@ public class LinkedList : IEnumerable<int>
     /// </summary>
     IEnumerator IEnumerable.GetEnumerator()
     {
+        // call the generic version of the method
         return this.GetEnumerator();
     }
 
@@ -183,28 +194,41 @@ public class LinkedList : IEnumerable<int>
     /// </summary>
     public IEnumerator<int> GetEnumerator()
     {
-        var curr = _head;
+        var curr = _head; // Start at the beginning since this is a forward iteration.
         while (curr is not null)
         {
-            yield return curr.Data;
-            curr = curr.Next;
+            yield return curr.Data; // Provide (yield) each item to the user
+            curr = curr.Next; // Go forward in the linked list
         }
     }
 
     /// <summary>
-    /// Problem 5: Iterate backward through the Linked List
+    /// Iterate backward through the Linked List
     /// </summary>
     public IEnumerable Reverse()
     {
-        // Start at the end of the list
-        // Start at the tail
-        Node? curr = _tail;
+        // Return a custom IEnumerable that overrides ToString() to match tests
+        return new ReverseEnumerable(_tail);
+    }
 
-        // Iterate backwards using the 'Prev' pointers
-        while (curr is not null)
+    private class ReverseEnumerable : IEnumerable
+    {
+        private Node? _tail;
+        public ReverseEnumerable(Node? tail) { _tail = tail; }
+
+        public IEnumerator GetEnumerator()
         {
-            yield return curr.Data;
-            curr = curr.Prev;
+            var curr = _tail;
+            while (curr is not null)
+            {
+                yield return curr.Data;
+                curr = curr.Prev;
+            }
+        }
+
+        public override string ToString()
+        {
+            return this.AsString();
         }
     }
 
@@ -213,6 +237,21 @@ public class LinkedList : IEnumerable<int>
         return "<LinkedList>{" + string.Join(", ", this) + "}";
     }
 
-    public Boolean HeadAndTailAreNull() => _head is null && _tail is null;
-    public Boolean HeadAndTailAreNotNull() => _head is not null && _tail is not null;
+    // Just for testing.
+    public Boolean HeadAndTailAreNull()
+    {
+        return _head is null && _tail is null;
+    }
+
+    // Just for testing.
+    public Boolean HeadAndTailAreNotNull()
+    {
+        return _head is not null && _tail is not null;
+    }
+}
+
+public static class IntArrayExtensionMethods {
+    public static string AsString(this IEnumerable array) {
+        return "<IEnumerable>{" + string.Join(", ", array.Cast<int>()) + "}";
+    }
 }
